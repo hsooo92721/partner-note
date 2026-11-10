@@ -2,6 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   addDuration,
+  formatLabelDate,
+  labelPrecision,
   search,
   selectRules,
   validateDB,
@@ -157,4 +159,19 @@ test("잘못된 JSON 구조·중복·참조 오류 거부", () => {
   const c = structuredClone(db);
   c.rules[0].durationValue = -1;
   assert.throws(() => validateDB(c));
+});
+
+test("라벨 기입 범위는 계산 시각과 독립", () => {
+  const date = new Date(2026, 10, 10, 13, 28);
+  assert.equal(formatLabelDate(date, "date"), "2026.11.10");
+  assert.equal(formatLabelDate(date, "datetime"), "2026.11.10 13:28");
+  assert.equal(date.getHours(), 13);
+  assert.equal(
+    labelPrecision({ ...db.rules[0], dateFormat: "YYYY-MM-DD" }),
+    "date",
+  );
+  assert.equal(
+    labelPrecision({ ...db.rules[0], dateFormat: "YYYY-MM-DD HH:mm" }),
+    "datetime",
+  );
 });

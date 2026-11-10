@@ -37,6 +37,8 @@ import {
   localInput,
   validateDB,
   applicable,
+  labelPrecision,
+  formatLabelDate,
 } from "./logic";
 import "./style.css";
 const KEY = "partner-note.v1";
@@ -1393,13 +1395,24 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
     }
   });
   const [message, setMessage] = useState("");
+  const [precisionOverride, setPrecisionOverride] = useState<
+    "date" | "datetime" | null
+  >(null);
   const item = db.ingredients.find((i) => i.id === id);
   const rules = selectRules(db.rules, id, work, storage, start.slice(0, 10));
+  const precision =
+    precisionOverride ??
+    labelPrecision(rules.length === 1 ? rules[0] : undefined);
+  const precisionText =
+    precision === "date" ? "날짜만 기입" : "날짜 + 시간 기입";
+  useEffect(() => {
+    setPrecisionOverride(null);
+  }, [id, work, storage, db]);
   useEffect(() => {
     setResult(null);
     setError("");
     setMessage("");
-  }, [id, work, storage, start, mode, opening, inclusive, demo, db]);
+  }, [id, work, storage, start, mode, opening, inclusive, demo, db, precision]);
   function changeItem(value: string) {
     setId(value);
     const r = db.rules.find(
@@ -1581,6 +1594,25 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
           데모 코드입니다.
         </p>
       </details>
+      <div className="label-format-control">
+        <label>
+          라벨 기입 범위 · 데모 설정
+          <select
+            aria-label="라벨 기입 범위"
+            value={precision}
+            onChange={(e) =>
+              setPrecisionOverride(e.target.value as "date" | "datetime")
+            }
+          >
+            <option value="date">날짜만 · YYYY.MM.DD</option>
+            <option value="datetime">날짜 + 시간 · YYYY.MM.DD HH:mm</option>
+          </select>
+        </label>
+        <p>
+          아래 라벨에는 선택한 범위만 표시합니다. 품목별 실제 기입 범위는 공식
+          확인이 필요합니다. 표기를 바꿔도 계산 시각은 유지됩니다.
+        </p>
+      </div>
       <button className="primary generate" onClick={generate}>
         <Tag size={18} /> NOW TAG 생성 <ArrowUpRight size={18} />
       </button>
@@ -1603,9 +1635,18 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
               <span>PARTNER NOTE / DEMO</span>
               <h3>{item?.name}</h3>
               <p>
-                작업 조건을 선택한 후<br />
-                NOW TAG를 실행해 주세요.
+                {work} · {storage}
               </p>
+              <span className="label-precision">{precisionText} · 데모</span>
+              <dl>
+                <dt>{work.replace(" 후", "일")}</dt>
+                <dd className="label-date-value">
+                  {precision === "date" ? "YYYY.MM.DD" : "YYYY.MM.DD HH:mm"}
+                </dd>
+                <dt>사용기한</dt>
+                <dd className="label-date-value">—</dd>
+              </dl>
+              <small>NOW TAG 생성 후 날짜가 채워집니다.</small>
             </div>
           </>
         ) : (
@@ -1638,12 +1679,15 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
                 <p>
                   {work} · {storage}
                 </p>
+                <span className="label-precision">{precisionText} · 데모</span>
                 <dl>
-                  <dt>작업 시작</dt>
-                  <dd>{fmt(new Date(start))}</dd>
+                  <dt>{work.replace(" 후", "일")}</dt>
+                  <dd className="label-date-value">
+                    {formatLabelDate(new Date(start), precision)}
+                  </dd>
                   <dt>사용기한 (데모)</dt>
-                  <dd>
-                    <b>{fmt(result.end)}</b>
+                  <dd className="label-date-value">
+                    <b>{formatLabelDate(result.end, precision)}</b>
                   </dd>
                 </dl>
                 <small>공식 운영용 라벨이 아닙니다.</small>
@@ -1654,8 +1698,21 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
       </div>
       {result && (
         <>
+          <details className="calculation-reference">
+            <summary>계산 근거 확인 · 라벨에 옮겨 적는 정보와 별개</summary>
+            <dl>
+              <dt>계산에 사용한 작업 시작 일시</dt>
+              <dd>{fmt(new Date(start))}</dd>
+              <dt>계산된 기한 일시</dt>
+              <dd>{fmt(result.end)}</dd>
+            </dl>
+            <p>
+              라벨 표기: {precisionText}. 날짜만 표시해도 계산된 기한 시각을
+              자정이나 하루 끝으로 변경하지 않습니다.
+            </p>
+          </details>
           <p className="warning">
-            시연용 계산 결과 · 실제 매장 사용 전 공식 기준 확인 필요
+            시연용 계산 결과 · 실제 날짜/시간 기입 범위는 공식 기준 확인 필요
           </p>
           <button
             className="outline"
@@ -1667,6 +1724,9 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
                 start,
                 end: localInput(result.end),
                 label: "시연용 계산 결과",
+                labelPrecision: precision,
+                labelStart: formatLabelDate(new Date(start), precision),
+                labelEnd: formatLabelDate(result.end, precision),
                 source: result.rule.source,
               };
               const next = [entry, ...history].slice(0, 20);
@@ -1687,9 +1747,16 @@ function TagBuilder({ db, initial }: { db: Database; initial?: string }) {
             <div className="saved-tag" key={i}>
               <b>{h.item}</b>
               <p>
-                {h.work} · {h.storage} · {h.end.replace("T", " ")}
+                {h.work} · {h.storage} · {h.labelEnd || h.end.replace("T", " ")}
               </p>
-              <small>{h.label}</small>
+              <small>
+                {h.label} ·{" "}
+                {h.labelPrecision === "date"
+                  ? "날짜만 기입"
+                  : h.labelPrecision === "datetime"
+                    ? "날짜 + 시간 기입"
+                    : "이전 저장 결과 · 표기 범위 미기록"}
+              </small>
             </div>
           ))}
         </details>

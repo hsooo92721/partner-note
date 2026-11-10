@@ -238,3 +238,13 @@ export function search(db: Database, q: string) {
 export function localInput(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
+
+// Label presentation is independent of expiration arithmetic.
+export function labelPrecision(rule: Rule | undefined): "date" | "datetime" {
+  return rule?.dateFormat.includes("H") ? "datetime" : "date";
+}
+export function formatLabelDate(date: Date, precision: "date" | "datetime") {
+  const local = localInput(date);
+  const day = local.slice(0, 10).replaceAll("-", ".");
+  return precision === "datetime" ? day + " " + local.slice(11, 16) : day;
+}
