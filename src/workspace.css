@@ -538,6 +538,7 @@ body {
   gap: 12px;
 }
 .pn-temperature {
+  container-type: inline-size;
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -548,18 +549,35 @@ body {
   padding: 0;
   margin: 10px 0 0;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
 .pn-flow-part {
+  min-width: 0;
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 8px;
-  align-items: start;
-  padding: 8px 0;
-  border-bottom: 1px solid #e9eaee;
+  align-content: start;
+  gap: 5px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fafafb;
 }
-.pn-flow-part:last-child {
-  border-bottom: 0;
+.pn-flow-part:only-child {
+  grid-column: 1 / -1;
+}
+.pn-recipe-switch {
+  display: none;
+}
+@media (max-width: 720px) {
+  .pn-recipe-switch {
+    display: block;
+  }
+  .pn-recipe-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pn-temperature[data-inactive="true"] {
+    display: none;
+  }
 }
 .pn-step-number {
   display: grid;
@@ -583,7 +601,7 @@ body {
   margin-top: 6px;
 }
 .pn-size-values span {
-  padding: 3px 7px;
+  padding: 2px 5px;
   border-radius: 6px;
   background: #f3f4f6;
   font-size: 12px;
@@ -703,5 +721,11 @@ body {
   }
   .pn-hero-calendar svg {
     width: 27px;
+  }
+}
+
+@container (min-width: 600px) {
+  .pn-flow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

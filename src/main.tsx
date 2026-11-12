@@ -559,6 +559,7 @@ function DrinkRecipe({
   drink: Drink;
 }) {
   const [ice, setIce] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<string>();
   const recipes = db.recipes
     .filter(
       (r) =>
@@ -569,6 +570,12 @@ function DrinkRecipe({
       (a, b) =>
         Number(b.temperature === "HOT") - Number(a.temperature === "HOT"),
     );
+  const variants = recipes.map((recipe) =>
+    recipe.size === "default"
+      ? recipe.temperature
+      : `${recipe.temperature} · ${recipe.size}`,
+  );
+  const currentVariant = selectedVariant ?? variants[0];
   const linked = db.ingredients.filter(
     (i) =>
       !i.hidden &&
@@ -578,11 +585,24 @@ function DrinkRecipe({
   );
   return (
     <div className="pn-recipe-body">
+      {variants.length > 1 && (
+        <div className="pn-recipe-switch">
+          <Filter
+            value={currentVariant}
+            change={setSelectedVariant}
+            options={[...variants, "모두 보기"]}
+          />
+        </div>
+      )}
       <div className="pn-recipe-columns">
-        {recipes.map((recipe) => (
+        {recipes.map((recipe, index) => (
           <section
             key={recipe.temperature + recipe.size}
             className="pn-temperature"
+            data-inactive={
+              currentVariant !== "모두 보기" &&
+              currentVariant !== variants[index]
+            }
           >
             <b className={recipe.temperature === "HOT" ? "pn-hot" : "pn-iced"}>
               {recipe.temperature}
