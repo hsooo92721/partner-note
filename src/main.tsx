@@ -1,13 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  CalendarClock,
-  Coffee,
-  Package,
-  Settings,
-  Search,
-  ChevronRight,
-} from "lucide-react";
+import { CalendarClock, Coffee, Package, Settings, Search } from "lucide-react";
 import seed from "./seed.json";
 import type { Database, Drink, Ingredient, Rule } from "./model";
 import {
@@ -253,47 +246,50 @@ function Quality({
     .filter((x) => x.rules.length);
   return (
     <section className="pn-quality">
-      {!ingredient && (
-        <div className="pn-heading">
-          <h1>내품기</h1>
-          {store.name && <span>{store.name}</span>}
+      <div className={ingredient ? "pn-calculator embedded" : "pn-calculator"}>
+        {!ingredient && (
+          <div className="pn-heading">
+            <h1>내품기</h1>
+            {store.name && <span>{store.name}</span>}
+          </div>
+        )}
+        <Filter value={mode} change={setMode} options={modes} />
+        {mode === modes[2] && (
+          <label className="pn-field">
+            작업 날짜 및 시간
+            <input
+              type="datetime-local"
+              required
+              value={direct}
+              onInput={(e) => setDirect(e.currentTarget.value)}
+              onChange={(e) => setDirect(e.target.value)}
+            />
+          </label>
+        )}
+        <div className="pn-basis">
+          {start ? (
+            <>
+              <b>
+                {localInput(start).replace("T", " ")} (
+                {dayNames[start.getDay()]})
+              </b>
+              {hours?.open && !hours.closed && (
+                <span>
+                  영업 {hours.open}–{hours.close || "미설정"}
+                </span>
+              )}
+            </>
+          ) : (
+            <span>
+              {mode === modes[1]
+                ? "다음 영업일의 오픈 시간을 설정해 주세요."
+                : "작업 날짜와 시간을 입력해 주세요."}
+            </span>
+          )}
+          {openStore && mode === modes[1] && !start && (
+            <button onClick={openStore}>매장 설정</button>
+          )}
         </div>
-      )}
-      <Filter value={mode} change={setMode} options={modes} />
-      {mode === modes[2] && (
-        <label className="pn-field">
-          작업 날짜 및 시간
-          <input
-            type="datetime-local"
-            required
-            value={direct}
-            onInput={(e) => setDirect(e.currentTarget.value)}
-            onChange={(e) => setDirect(e.target.value)}
-          />
-        </label>
-      )}
-      <div className="pn-basis">
-        {start ? (
-          <>
-            <b>
-              {localInput(start).replace("T", " ")} ({dayNames[start.getDay()]})
-            </b>
-            {hours?.open && !hours.closed && (
-              <span>
-                영업 {hours.open}–{hours.close || "미설정"}
-              </span>
-            )}
-          </>
-        ) : (
-          <span>
-            {mode === modes[1]
-              ? "다음 영업일의 오픈 시간을 설정해 주세요."
-              : "작업 날짜와 시간을 입력해 주세요."}
-          </span>
-        )}
-        {openStore && mode === modes[1] && !start && (
-          <button onClick={openStore}>매장 설정</button>
-        )}
       </div>
       {!ingredient && (
         <>
@@ -314,64 +310,37 @@ function Quality({
         {mode === modes[0] && " · 시간형은 정시부터 계산"}
       </p>
       {groups.length ? (
-        <div
-          className="pn-table-scroll"
-          tabIndex={0}
-          aria-label="내품기 표. 가로로 이동하면 보관 기준과 특이사항을 볼 수 있습니다."
-        >
-          <table className="pn-table">
-            <colgroup>
-              <col className="pn-col-name" />
-              <col className="pn-col-period" />
-              <col className="pn-col-end" />
-              <col className="pn-col-state" />
-              <col className="pn-col-storage" />
-              <col className="pn-col-notes" />
-            </colgroup>
-            <thead>
-              <tr>
-                {[
-                  "품목명",
-                  "내품기",
-                  "마감일",
-                  "구분",
-                  "보관기준",
-                  "특이사항",
-                ].map((label) => (
-                  <th key={label}>{label}</th>
-                ))}
-              </tr>
-            </thead>
-            {groups.map(({ item, rules }) => (
-              <tbody key={item.id}>
-                {rules.map((rule, index) => {
-                  const conflict = rules.some(
-                    (other) =>
-                      other.id !== rule.id &&
-                      other.workState === rule.workState &&
-                      other.storageCondition === rule.storageCondition,
-                  );
-                  return (
-                    <tr key={rule.id}>
-                      {index === 0 && (
-                        <th
-                          className="pn-sticky"
-                          scope="rowgroup"
-                          rowSpan={rules.length}
-                        >
-                          {item.name}
-                          {item.aliases.length > 0 && (
-                            <small>{item.aliases.join(" · ")}</small>
-                          )}
-                        </th>
-                      )}
-                      <td>
-                        {rule.durationValue}
-                        {rule.durationUnit}
-                      </td>
-                      <td>
+        <div className="pn-results">
+          {groups.map(({ item, rules }) => (
+            <article key={item.id} className="pn-result">
+              <div className="pn-item-heading">
+                <h2>
+                  {item.name}
+                  {item.aliases[0] && <small>{item.aliases[0]}</small>}
+                </h2>
+                <span>{ingredientGroup(item)}</span>
+              </div>
+              {rules.map((rule) => {
+                const conflict = rules.some(
+                  (other) =>
+                    other.id !== rule.id &&
+                    other.workState === rule.workState &&
+                    other.storageCondition === rule.storageCondition,
+                );
+                return (
+                  <div key={rule.id} className="pn-rule">
+                    <div className="pn-rule-main">
+                      <div className="pn-rule-info">
+                        <b>{rule.workState}</b>
+                        <span>
+                          {rule.durationValue}
+                          {rule.durationUnit} · {rule.storageCondition}
+                        </span>
+                      </div>
+                      <div className="pn-rule-end">
+                        <small>마감</small>
                         {conflict ? (
-                          "기준 충돌"
+                          <strong className="pn-error">기준 충돌</strong>
                         ) : start ? (
                           <Deadline
                             start={start}
@@ -381,19 +350,20 @@ function Quality({
                         ) : (
                           "—"
                         )}
-                      </td>
-                      <td>{rule.workState}</td>
-                      <td>{rule.storageCondition}</td>
-                      <td>
-                        {rule.notes || "—"}
-                        <small>{rule.source}</small>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            ))}
-          </table>
+                      </div>
+                    </div>
+                    <details className="pn-rule-detail">
+                      <summary>기준 및 특이사항</summary>
+                      {rule.notes && <p>{rule.notes}</p>}
+                      <p>
+                        {rule.source} · {rule.verificationStatus}
+                      </p>
+                    </details>
+                  </div>
+                );
+              })}
+            </article>
+          ))}
         </div>
       ) : (
         <p className="pn-empty">
@@ -531,14 +501,16 @@ function Recipes({
 }
 function Flow({ children }: { children: ReactNode[] }) {
   return (
-    <div className="pn-flow">
+    <ol className="pn-flow">
       {children.map((child, index) => (
-        <div key={index} className="pn-flow-part">
-          {index > 0 && <ChevronRight size={16} />}
+        <li key={index} className="pn-flow-part">
+          <span aria-hidden="true" className="pn-step-number">
+            {index + 1}
+          </span>
           <div className="pn-step">{child}</div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }
 function Prep({
@@ -599,45 +571,52 @@ function DrinkRecipe({
   return (
     <div className="pn-recipe-body">
       <p className="pn-caption">{drink.verificationStatus}</p>
-      {recipes.map((recipe) => (
-        <section
-          key={recipe.temperature + recipe.size}
-          className="pn-temperature"
-        >
-          <b className={recipe.temperature === "HOT" ? "pn-hot" : "pn-iced"}>
-            {recipe.temperature}
-          </b>
-          <span className="pn-caption">
-            {recipe.size === "default"
-              ? (
-                  drink.availableSizesByTemperature[recipe.temperature] ?? []
-                ).join(" / ")
-              : recipe.size}
-          </span>
-          <Flow>
-            {recipe.orderedSteps.map((step, index) => (
-              <div key={index}>
-                {step.description || step.action}
-                {!!Object.keys(step.quantityBySize).length && (
-                  <strong>
-                    {Object.entries(step.quantityBySize)
-                      .map(([size, qty]) => `${size} ${qty}${step.unit}`)
-                      .join(" · ")}
-                  </strong>
-                )}
-                {step.note && <small>{step.note}</small>}
-              </div>
-            ))}
-          </Flow>
-          {(recipe.equipment || recipe.servingInstructions) && (
-            <p className="pn-caption">
-              {[recipe.equipment, recipe.servingInstructions]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-          )}
-        </section>
-      ))}
+      <div className="pn-recipe-columns">
+        {recipes.map((recipe) => (
+          <section
+            key={recipe.temperature + recipe.size}
+            className="pn-temperature"
+          >
+            <b className={recipe.temperature === "HOT" ? "pn-hot" : "pn-iced"}>
+              {recipe.temperature}
+            </b>
+            <span className="pn-caption">
+              {recipe.size === "default"
+                ? (
+                    drink.availableSizesByTemperature[recipe.temperature] ?? []
+                  ).join(" / ")
+                : recipe.size}
+            </span>
+            <Flow>
+              {recipe.orderedSteps.map((step, index) => (
+                <div key={index}>
+                  {step.description || step.action}
+                  {!!Object.keys(step.quantityBySize).length && (
+                    <div className="pn-size-values">
+                      {Object.entries(step.quantityBySize).map(
+                        ([size, qty]) => (
+                          <span key={size}>
+                            <b>{size}</b> {qty}
+                            {step.unit}
+                          </span>
+                        ),
+                      )}
+                    </div>
+                  )}
+                  {step.note && <small>{step.note}</small>}
+                </div>
+              ))}
+            </Flow>
+            {(recipe.equipment || recipe.servingInstructions) && (
+              <p className="pn-caption">
+                {[recipe.equipment, recipe.servingInstructions]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            )}
+          </section>
+        ))}
+      </div>
       {!recipes.length && <p className="pn-caption">제조법 자료 확인 중</p>}
       {drink.id === "d6" && (
         <label className="pn-choice">
