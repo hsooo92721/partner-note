@@ -1,3 +1,4 @@
+import { displayNote } from "./display-copy";
 import { useState, type ReactNode } from "react";
 import type { Database, Drink, Ingredient, Recipe, Rule, Step } from "./model";
 import { normalize, validateDB } from "./logic";
@@ -311,9 +312,7 @@ export function Admin({
       <div className="pn-heading">
         <h1>데이터 관리</h1>
       </div>
-      <p className="pn-caption">
-        포트폴리오용 로컬 편집 · 변경 내용은 이 브라우저에 저장됩니다.
-      </p>
+      <p className="pn-caption">변경 내용은 이 브라우저에 저장됩니다.</p>
       <div className="pn-filters">
         {Object.entries(kinds).map(([id, label]) => (
           <button
@@ -619,22 +618,25 @@ function RuleFields({
         change={(tagType) => change({ ...r, tagType })}
       />
       <Input
-        label="근거"
-        required
-        value={r.source}
-        change={(source) => change({ ...r, source })}
-      />
-      <Input
         label="특이사항"
-        value={r.notes}
+        value={displayNote(r.notes)}
         change={(notes) => change({ ...r, notes })}
       />
-      <Select
-        label="검증 상태"
-        value={r.verificationStatus}
-        options={["공식 확인 필요", "공식 확인", "이전 기준 예시"]}
-        change={(verificationStatus) => change({ ...r, verificationStatus })}
-      />
+      <label>
+        <input
+          type="checkbox"
+          checked={r.verificationStatus === "이전 기준 예시"}
+          onChange={(e) =>
+            change({
+              ...r,
+              verificationStatus: e.target.checked
+                ? "이전 기준 예시"
+                : "공식 확인 필요",
+            })
+          }
+        />
+        이전 기준으로 보관
+      </label>
       {r.durationUnit === "시간" ? (
         <label>
           <input
@@ -691,7 +693,7 @@ function PrepFields({
       </Field>
       <Input
         label="특이사항"
-        value={recipe.notes}
+        value={displayNote(recipe.notes)}
         change={(notes) => save({ notes })}
       />
     </>
@@ -742,7 +744,7 @@ function DrinkFields({
         />
         <Input
           label="특이사항"
-          value={drink.specialInstructions}
+          value={displayNote(drink.specialInstructions)}
           change={(specialInstructions) => item({ specialInstructions })}
         />
       </div>

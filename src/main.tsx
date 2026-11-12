@@ -21,6 +21,7 @@ import {
   type Hours,
   type Store,
 } from "./operations";
+import { displayNote } from "./display-copy";
 import { Admin } from "./admin";
 import "./style.css";
 import "./workspace.css";
@@ -314,10 +315,6 @@ function Quality({
           />
         </>
       )}
-      <p className="pn-caption">
-        시연 기준 · 매장 적용 전 공식 기준 확인
-        {mode === modes[0] && " · 시간형은 정시부터 계산"}
-      </p>
       {groups.length ? (
         <div className="pn-results">
           {groups.map(({ item, rules }) => (
@@ -336,6 +333,7 @@ function Quality({
                     other.workState === rule.workState &&
                     other.storageCondition === rule.storageCondition,
                 );
+                const note = displayNote(rule.notes);
                 return (
                   <div key={rule.id} className="pn-rule">
                     <div className="pn-rule-main">
@@ -361,13 +359,12 @@ function Quality({
                         )}
                       </div>
                     </div>
-                    <details className="pn-rule-detail">
-                      <summary>기준 및 특이사항</summary>
-                      {rule.notes && <p>{rule.notes}</p>}
-                      <p>
-                        {rule.source} · {rule.verificationStatus}
-                      </p>
-                    </details>
+                    {note && (
+                      <details className="pn-rule-detail">
+                        <summary>특이사항</summary>
+                        <p>{note}</p>
+                      </details>
+                    )}
                   </div>
                 );
               })}
@@ -538,7 +535,9 @@ function Prep({
         <>
           <p className="pn-materials">{recipe.ingredients.join(" + ")}</p>
           <Flow>{recipe.steps}</Flow>
-          {recipe.notes && <p className="pn-caption">{recipe.notes}</p>}
+          {displayNote(recipe.notes) && (
+            <p className="pn-caption">{displayNote(recipe.notes)}</p>
+          )}
         </>
       ) : (
         <p className="pn-caption">제조법 자료 확인 중</p>
@@ -579,7 +578,6 @@ function DrinkRecipe({
   );
   return (
     <div className="pn-recipe-body">
-      <p className="pn-caption">{drink.verificationStatus}</p>
       <div className="pn-recipe-columns">
         {recipes.map((recipe) => (
           <section
@@ -612,7 +610,9 @@ function DrinkRecipe({
                       )}
                     </div>
                   )}
-                  {step.note && <small>{step.note}</small>}
+                  {displayNote(step.note) && (
+                    <small>{displayNote(step.note)}</small>
+                  )}
                 </div>
               ))}
             </Flow>
@@ -637,8 +637,8 @@ function DrinkRecipe({
           얼음 함께 제공 {ice && <strong> → Tall 컵 사용</strong>}
         </label>
       )}
-      {drink.specialInstructions && (
-        <p className="pn-caption">{drink.specialInstructions}</p>
+      {displayNote(drink.specialInstructions) && (
+        <p className="pn-caption">{displayNote(drink.specialInstructions)}</p>
       )}
       {linked.map((i) => (
         <details key={i.id} className="pn-related">

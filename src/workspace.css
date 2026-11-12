@@ -7,7 +7,7 @@ body {
 }
 .pn-app {
   --green: #175440;
-  --line: #d5e3da;
+  --line: #e1e4e8;
   --surface: #fff;
   --muted: #50685e;
   min-height: 100dvh;
@@ -353,7 +353,7 @@ body {
 .pn-app {
   --green: #087451;
   --muted: #4c6357;
-  --line: #dbe9e1;
+  --line: #e1e4e8;
   overflow-wrap: anywhere;
 }
 .pn-top {
@@ -407,9 +407,9 @@ body {
   color: white;
 }
 .pn-calculator .pn-filters button[aria-pressed="true"] {
-  background: #e5f5e9;
+  background: #ffffff;
   color: #173f30;
-  border-color: #e5f5e9;
+  border-color: #ffffff;
 }
 .pn-calculator input,
 .pn-calculator .pn-basis button {
@@ -434,7 +434,7 @@ body {
   border-radius: 11px;
 }
 .pn-nav button[aria-current] {
-  background: #d9f5e7;
+  background: #eef0f3;
   color: #174b38;
   border-color: transparent;
 }
@@ -476,7 +476,7 @@ body {
   font-size: 11px;
 }
 .pn-rule {
-  border-top: 1px solid #e8ede8;
+  border-top: 1px solid #e9eaee;
   padding: 9px 14px;
 }
 .pn-rule-main {
@@ -556,7 +556,7 @@ body {
   gap: 8px;
   align-items: start;
   padding: 8px 0;
-  border-bottom: 1px solid #e8ede8;
+  border-bottom: 1px solid #e9eaee;
 }
 .pn-flow-part:last-child {
   border-bottom: 0;
@@ -567,7 +567,7 @@ body {
   width: 24px;
   height: 24px;
   border-radius: 8px;
-  background: #e8f1eb;
+  background: #eef0f3;
   color: #20563f;
   font-weight: 700;
   font-size: 12px;
@@ -585,7 +585,7 @@ body {
 .pn-size-values span {
   padding: 3px 7px;
   border-radius: 6px;
-  background: #eff4ef;
+  background: #f3f4f6;
   font-size: 12px;
 }
 .pn-size-values b {
@@ -616,7 +616,7 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 11px;
-  background: #d9f5e7;
+  background: #eef0f3;
 }
 .pn-hero-heading {
   align-items: center;
@@ -639,9 +639,9 @@ body {
   margin-inline-end: 5px;
   border-radius: 18px;
   color: #086244;
-  background: linear-gradient(145deg, #f6fff9, #bcecd6);
+  background: linear-gradient(145deg, #ffffff, #e8ebef);
   box-shadow:
-    6px 7px 0 #adf6d147,
+    6px 7px 0 #ffffff45,
     0 8px 16px #073a3238;
   transform: rotate(9deg);
 }
@@ -676,7 +676,7 @@ body {
 .pn-item-heading > span {
   padding: 3px 7px;
   border-radius: 8px;
-  background: #e7f6ed;
+  background: #f0f1f3;
   color: #246449;
 }
 .pn-rule-end {
@@ -685,12 +685,12 @@ body {
 .pn-deadline {
   padding: 4px 8px;
   border-radius: 10px;
-  background: #edf8f1;
+  background: #f3f4f6;
   color: #144f39;
 }
 .pn-step-number,
 .pn-size-values span {
-  background: #e2f5e9;
+  background: #eef0f3;
 }
 .pn-nav {
   box-shadow: 0 -6px 24px #173c2410;
