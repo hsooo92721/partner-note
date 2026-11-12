@@ -132,7 +132,10 @@ function App() {
             navigate("quality");
           }}
         >
-          <Coffee size={21} /> PARTNER NOTE
+          <span className="pn-brand-icon">
+            <Coffee size={19} />
+          </span>{" "}
+          PARTNER NOTE
         </a>
         <button
           onClick={() => navigate(page === "admin" ? "quality" : "admin")}
@@ -248,9 +251,15 @@ function Quality({
     <section className="pn-quality">
       <div className={ingredient ? "pn-calculator embedded" : "pn-calculator"}>
         {!ingredient && (
-          <div className="pn-heading">
-            <h1>내품기</h1>
-            {store.name && <span>{store.name}</span>}
+          <div className="pn-heading pn-hero-heading">
+            <div>
+              <h1>내품기</h1>
+              <p>작업 시점에 맞춰 마감일을 확인하세요.</p>
+              {store.name && <span>{store.name}</span>}
+            </div>
+            <div className="pn-hero-calendar" aria-hidden="true">
+              <CalendarClock size={35} strokeWidth={1.7} />
+            </div>
           </div>
         )}
         <Filter value={mode} change={setMode} options={modes} />

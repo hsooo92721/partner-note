@@ -348,13 +348,13 @@ body {
   color: #9d2424;
 }
 :root {
-  background: #f6f7f4;
+  background: #f3f7f5;
   color: #192920;
 }
 .pn-app {
-  --green: #123e31;
+  --green: #087451;
   --muted: #4c6357;
-  --line: #dce5dd;
+  --line: #dbe9e1;
   overflow-wrap: anywhere;
 }
 .pn-top {
@@ -380,10 +380,10 @@ body {
   line-height: 1.2;
 }
 .pn-calculator {
-  background: linear-gradient(140deg, #123e31, #1e5543);
+  background: linear-gradient(135deg, #087451, #0d825c);
   color: #fff;
-  padding: 18px;
-  border-radius: 19px;
+  padding: 20px;
+  border-radius: 23px;
 }
 .pn-calculator .pn-heading h1,
 .pn-calculator .pn-heading span,
@@ -435,7 +435,7 @@ body {
   border-radius: 11px;
 }
 .pn-nav button[aria-current] {
-  background: #e3efe7;
+  background: #d9f5e7;
   color: #174b38;
   border-color: transparent;
 }
@@ -449,8 +449,8 @@ body {
 .pn-result {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 15px;
-  box-shadow: 0 2px 6px #183c2610;
+  border-radius: 18px;
+  box-shadow: 0 5px 18px #133d2410;
   min-width: 0;
 }
 .pn-item-heading {
@@ -458,7 +458,7 @@ body {
   justify-content: space-between;
   gap: 8px;
   align-items: baseline;
-  padding: 13px 14px 10px;
+  padding: 15px 15px 12px;
 }
 .pn-item-heading h2 {
   margin: 0;
@@ -608,5 +608,101 @@ body {
   }
   .pn-nav button {
     white-space: normal;
+  }
+}
+
+.pn-brand-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #d9f5e7;
+}
+.pn-hero-heading {
+  align-items: center;
+  min-height: 70px;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+.pn-hero-heading p {
+  margin: 6px 0 0;
+  color: #f0fff6;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.pn-hero-calendar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 61px;
+  height: 61px;
+  margin-inline-end: 5px;
+  border-radius: 18px;
+  color: #086244;
+  background: linear-gradient(145deg, #f6fff9, #bcecd6);
+  box-shadow:
+    6px 7px 0 #adf6d147,
+    0 8px 16px #073a3238;
+  transform: rotate(9deg);
+}
+.pn-hero-calendar svg {
+  transform: rotate(-9deg);
+}
+.pn-calculator:not(.embedded) .pn-filters {
+  gap: 5px;
+}
+.pn-calculator .pn-filters button {
+  min-height: 42px;
+  border-radius: 11px;
+}
+.pn-calculator .pn-filters button[aria-pressed="true"] {
+  background: #fff;
+  border-color: #fff;
+  color: #086244;
+}
+.pn-calculator .pn-basis {
+  margin-top: 11px;
+}
+.pn-search {
+  box-shadow: 0 3px 12px #133d240b;
+}
+.pn-search:focus-within {
+  outline: 2px solid #087451;
+  outline-offset: 2px;
+}
+.pn-search input:focus-visible {
+  outline: none;
+}
+.pn-item-heading > span {
+  padding: 3px 7px;
+  border-radius: 8px;
+  background: #e7f6ed;
+  color: #246449;
+}
+.pn-rule-end {
+  justify-items: end;
+}
+.pn-deadline {
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: #edf8f1;
+  color: #144f39;
+}
+.pn-step-number,
+.pn-size-values span {
+  background: #e2f5e9;
+}
+.pn-nav {
+  box-shadow: 0 -6px 24px #173c2410;
+}
+@media (max-width: 360px) {
+  .pn-hero-calendar {
+    flex-basis: 47px;
+    height: 47px;
+    border-radius: 13px;
+  }
+  .pn-hero-calendar svg {
+    width: 27px;
   }
 }
