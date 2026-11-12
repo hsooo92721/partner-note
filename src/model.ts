@@ -1,3 +1,4 @@
+import type { PrepRecipe } from "./operations";
 export type Temperature = "HOT" | "ICED";
 export interface Step {
   order: number;
@@ -18,6 +19,7 @@ export interface Recipe {
   servingInstructions: string;
 }
 export interface Drink {
+  hidden?: boolean;
   id: string;
   name: string;
   englishName: string;
@@ -34,6 +36,9 @@ export interface Drink {
   source: string;
 }
 export interface Ingredient {
+  hidden?: boolean;
+  group?: "코어" | "프로모션";
+  prepRecipe?: PrepRecipe;
   noRuleStates?: string[];
   id: string;
   name: string;
@@ -44,6 +49,8 @@ export interface Ingredient {
   verificationStatus: string;
 }
 export interface Rule {
+  includeWorkDay?: boolean;
+  exactMinutes?: boolean;
   id: string;
   ingredientId: string;
   workState: string;

@@ -77,7 +77,14 @@ export function validateDB(v: unknown): asserts v is Database {
       !Array.isArray(i.aliases) ||
       i.aliases.some((a) => typeof a !== "string") ||
       !Array.isArray(i.relatedIngredientIds) ||
-      (i.noRuleStates && !Array.isArray(i.noRuleStates))
+      (i.noRuleStates && !Array.isArray(i.noRuleStates)) ||
+      (i.prepRecipe &&
+        (!Array.isArray(i.prepRecipe.ingredients) ||
+          !Array.isArray(i.prepRecipe.steps) ||
+          [...i.prepRecipe.ingredients, ...i.prepRecipe.steps].some(
+            (value) => typeof value !== "string",
+          ) ||
+          typeof i.prepRecipe.notes !== "string"))
     )
       throw Error("부재료 필수 필드 오류");
   for (const item of d.drinks)
